@@ -14,15 +14,16 @@
  *   * Nothing at this time. 
  */
 
-FIN_THICKNESS = 1;
-NUMBER_OF_FINS = 3;    
+$fn = 40;
+
+NUMBER_OF_FINS = 3;  
+FIN_THICKNESS = 1;  
 FIN_INSET = 0.5;  
 FIN_SCALE = 0.75;
+
 PENCIL_DIAMETER = 7.6;
 PENCIL_BASE_THICKNESS = 2;
-SUPPORT_HEIGHT = 10;
-
-$fn = 40;   // Overall curve quality
+PENCIL_SUPPORT_HEIGHT = 10;
 
 ARRAY_BASE_CORRECTION = -1;
 
@@ -51,7 +52,7 @@ module pencilSupport()
 	translate(supportPosition) 
 		difference() 
 		{
-			cylinder(h=SUPPORT_HEIGHT, r=radius(PENCIL_DIAMETER));
+			cylinder(h=PENCIL_SUPPORT_HEIGHT, r=radius(PENCIL_DIAMETER));
 			configureNut();
 		}
 }
@@ -117,7 +118,7 @@ function nutSide(diameter) = diameter * tan( 180/6 );
 
 module configureNut()
 {
-	offsetZ = SUPPORT_HEIGHT / 2;
+	offsetZ = PENCIL_SUPPORT_HEIGHT / 2;
 	offset = [0,0,offsetZ];
 
 	translate(offset) 
@@ -131,7 +132,7 @@ module nut()
 
 	nutHeigthCorrector = 1;
 
-	nutHeigth = SUPPORT_HEIGHT + nutHeigthCorrector;
+	nutHeigth = PENCIL_SUPPORT_HEIGHT + nutHeigthCorrector;
 	side = nutSide(PENCIL_DIAMETER);
 
 	degrees = 120;
