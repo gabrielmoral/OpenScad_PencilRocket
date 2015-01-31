@@ -48,12 +48,10 @@ module pencilSupport()
 	offsetZ = 8;
 	supportPosition = [0,0,offsetZ];
 
-	radius = radius(PENCIL_DIAMETER);
-
 	translate(supportPosition) 
 		difference() 
 		{
-			cylinder(h=SUPPORT_HEIGHT, r=radius);
+			cylinder(h=SUPPORT_HEIGHT, r=radius(PENCIL_DIAMETER));
 			configureNut();
 		}
 }
@@ -72,9 +70,7 @@ module configureFin(finNumber)
 	tiltZ = (totalDegrees / NUMBER_OF_FINS)* finNumber;
 	tilt = [0,0,tiltZ];
 	
-	radius = radius(PENCIL_DIAMETER);
-
-	offsetX = radius - FIN_INSET;
+	offsetX = radius(PENCIL_DIAMETER) - FIN_INSET;
 	offset = [offsetX, 0, 0];
 
 	scaleMeasures = [FIN_SCALE,FIN_SCALE,1];
