@@ -42,7 +42,7 @@ union() {
 	
 		translate([0,0,(bandHeight)/2]) 
 			rotate([0,0,30]) 
-			nut([pencilInDiameter, bandHeight+1]);
+			nut();
 	
 	}
 	
@@ -82,15 +82,23 @@ module fin() {
 	}
 }
 
+function nutSide(diameter) = diameter * tan( 180/6 );
 
-// Same nutty code I use in my other designs...
-// nutSize = [inDiameter,thickness]
-module nut( nutSize ) { 
-	side = nutSize[0] * tan( 180/6 );
-	if ( nutSize[0] * nutSize[1] != 0 ) {
-		for ( i = [0 : 2] ) {
-			rotate( i*120, [0, 0, 1]) 
-				cube( [side, nutSize[0], nutSize[1]], center=true );
-		}
-	}
+module nut() 
+{
+ 	cubes = 2;
+
+	nutHeigthCorrector = 1;
+
+	nutHeigth = bandHeight + nutHeigthCorrector;
+	side = nutSide(pencilInDiameter);
+
+	degrees = 120;
+	axisZ = [0, 0, 1];
+
+	for ( i = [0 : cubes] ) 
+	{
+		rotate( i*degrees, axisZ) 
+			cube( [side, pencilInDiameter, nutHeigth], center=true );
+	}	
 }
