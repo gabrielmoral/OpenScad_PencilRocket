@@ -20,38 +20,42 @@ FIN_INSET = 0.5;
 FIN_SCALE = 0.75; // Scale the fins larger (>1) or smaller (<1)
 PENCIL_DIAMETER = 7.6;
 PENCIL_BASE_THICKNESS = 2;
-bandHeight = 10;   // The height of the band
-bandTranslation = 8;    // The distance the band is translated toward the top of the fins
+SUPPORT_HEIGHT = 10;
 
 $fn = 40;   // Overall curve quality
 
 ARRAY_BASE_CORRECTION = -1;
 
-UP = [180,0,0];
-RIGTH = [90,0,0];
+UP_X = [180,0,0];
+RIGTH_X = [90,0,0];
+RIGTH_Z = [0,0,30];
 
 module pencilRocket()
 {
-	rotate(UP) 
+	rotate(UP_X) 
 		union() 
 		{
-			pencilBase();	
+			pencilSupport();	
 			fins();
 		}
 }
 
-module pencilBase()
+function half(dimension) = dimension / 2;
+function radius(diameter) = half(diameter) + PENCIL_BASE_THICKNESS;
+
+module pencilSupport()
 {
-	translate([0,0,bandTranslation]) 
-				difference() 
-				{
-					cylinder(h=bandHeight, r=PENCIL_DIAMETER/2+PENCIL_BASE_THICKNESS);
-	
-					translate([0,0,(bandHeight)/2]) 
-						rotate([0,0,30]) 
-							nut();
-	
-				}
+	offsetZ = 8;
+	supportPosition = [0,0,offsetZ];
+
+	radius = radius(PENCIL_DIAMETER);
+
+	translate(supportPosition) 
+		difference() 
+		{
+			cylinder(h=SUPPORT_HEIGHT, r=radius);
+			configureNut();
+		}
 }
 
 module fins()
@@ -68,14 +72,16 @@ module configureFin(finNumber)
 	tiltZ = (totalDegrees / NUMBER_OF_FINS)* finNumber;
 	tilt = [0,0,tiltZ];
 	
-	offsetX = PENCIL_DIAMETER / 2 + PENCIL_BASE_THICKNESS - FIN_INSET;
+	radius = radius(PENCIL_DIAMETER);
+
+	offsetX = radius - FIN_INSET;
 	offset = [offsetX, 0, 0];
 
 	scaleMeasures = [FIN_SCALE,FIN_SCALE,1];
 
 	rotate(tilt) 
 		translate(offset) 
-			rotate(RIGTH) 
+			rotate(RIGTH_X) 
 				scale(scaleMeasures) 
 					fin(); 
 }
@@ -104,13 +110,20 @@ module fin() {
 
 function nutSide(diameter) = diameter * tan( 180/6 );
 
+module configureNut()
+{
+	translate([0,0,(SUPPORT_HEIGHT)/2]) 
+		rotate(RIGTH_Z) 
+			nut();	
+}
+
 module nut() 
 {
  	cubes = 2;
 
 	nutHeigthCorrector = 1;
 
-	nutHeigth = bandHeight + nutHeigthCorrector;
+	nutHeigth = SUPPORT_HEIGHT + nutHeigthCorrector;
 	side = nutSide(PENCIL_DIAMETER);
 
 	degrees = 120;
