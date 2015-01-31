@@ -14,23 +14,25 @@
  *   * Nothing at this time. 
  */
 
-finThickness     = 1;    // Thickness of fins
-finCount         = 3;    // Number of fins
-finInset         = 0.5;  // Distance fins are inset from surface
-finScale         = 0.75; // Scale the fins larger (>1) or smaller (<1)
-pencilInDiameter = 7.6;  // Diameter of pencil (flat to flat for hex) 6.85 == Ticonderoga #2
-bandThickness    = 2;    // The maximum thickness of the band the fins are attached to 
-bandHeight       = 10;   // The height of the band
-bandTranslation  = 8;    // The distance the band is translated toward the top of the fins
+FIN_THICKNESS = 1;
+NUMBER_OF_FINS = 3;    
+FIN_INSET = 0.5;  
+FIN_SCALE = 0.75; // Scale the fins larger (>1) or smaller (<1)
+PENCIL_DIAMETER = 7.6;
+PENCIL_BASE_THICKNESS = 2;
+bandHeight = 10;   // The height of the band
+bandTranslation = 8;    // The distance the band is translated toward the top of the fins
 
-$fn              = 40;   // Overall curve quality
+$fn = 40;   // Overall curve quality
 
-up = [180,0,0];
+ARRAY_BASE_CORRECTION = -1;
 
+UP = [180,0,0];
+RIGTH = [90,0,0];
 
 module pencilRocket()
 {
-	rotate(up) 
+	rotate(UP) 
 		union() 
 		{
 			pencilBase();	
@@ -43,7 +45,7 @@ module pencilBase()
 	translate([0,0,bandTranslation]) 
 				difference() 
 				{
-					cylinder(h=bandHeight, r=pencilInDiameter/2+bandThickness);
+					cylinder(h=bandHeight, r=PENCIL_DIAMETER/2+PENCIL_BASE_THICKNESS);
 	
 					translate([0,0,(bandHeight)/2]) 
 						rotate([0,0,30]) 
@@ -54,30 +56,45 @@ module pencilBase()
 
 module fins()
 {
-	for( i=[0:finCount-1] ) 
+	for( i=[0:NUMBER_OF_FINS + ARRAY_BASE_CORRECTION] ) 
 	{	
-		rotate([0,0,(360/finCount)*i]) 
-			translate([pencilInDiameter/2+bandThickness-finInset, 0, 0]) 
-				rotate([90,0,0]) 
-					scale([finScale,finScale,1]) 
-						fin(); 	
+		configureFin(i);
 	}
 }
+
+module configureFin(finNumber)
+{
+	totalDegrees = 360;
+	tiltZ = (totalDegrees / NUMBER_OF_FINS)* finNumber;
+	tilt = [0,0,tiltZ];
+	
+	offsetX = PENCIL_DIAMETER / 2 + PENCIL_BASE_THICKNESS - FIN_INSET;
+	offset = [offsetX, 0, 0];
+
+	scaleMeasures = [FIN_SCALE,FIN_SCALE,1];
+
+	rotate(tilt) 
+		translate(offset) 
+			rotate(RIGTH) 
+				scale(scaleMeasures) 
+					fin(); 
+}
+
 
 module fin() {
 	translate([-20,-11.8,0]) 
 	union() {
 		difference() { 
-			cylinder(h=finThickness, r=40, center=true);
+			cylinder(h=FIN_THICKNESS, r=40, center=true);
 			
 			translate([0,-18,0]) 
-				cylinder(h=finThickness+1, r=36, center=true);
+				cylinder(h=FIN_THICKNESS+1, r=36, center=true);
 	
 			translate([-25,0,0]) 
-				cube([90,90,finThickness+1], center=true);
+				cube([90,90,FIN_THICKNESS+1], center=true);
 
 			translate([36,-16,0]) 
-				cube([10,10,finThickness+1], center=true);
+				cube([10,10,FIN_THICKNESS+1], center=true);
 		}
 
 		translate([36.75,-12,0]) 
@@ -94,7 +111,7 @@ module nut()
 	nutHeigthCorrector = 1;
 
 	nutHeigth = bandHeight + nutHeigthCorrector;
-	side = nutSide(pencilInDiameter);
+	side = nutSide(PENCIL_DIAMETER);
 
 	degrees = 120;
 	axisZ = [0, 0, 1];
@@ -102,7 +119,7 @@ module nut()
 	for ( i = [0 : cubes] ) 
 	{
 		rotate( i*degrees, axisZ) 
-			cube( [side, pencilInDiameter, nutHeigth], center=true );
+			cube( [side, PENCIL_DIAMETER, nutHeigth], center=true );
 	}	
 }
 
