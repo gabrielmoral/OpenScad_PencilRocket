@@ -17,7 +17,7 @@
 FIN_THICKNESS = 1;
 NUMBER_OF_FINS = 3;    
 FIN_INSET = 0.5;  
-FIN_SCALE = 0.75; // Scale the fins larger (>1) or smaller (<1)
+FIN_SCALE = 0.75;
 PENCIL_DIAMETER = 7.6;
 PENCIL_BASE_THICKNESS = 2;
 SUPPORT_HEIGHT = 10;
@@ -85,8 +85,10 @@ module configureFin(finNumber)
 
 module fin() {
 	translate([-20,-11.8,0]) 
-	union() {
-		difference() { 
+	union() 
+	{
+		difference() 
+		{ 
 			cylinder(h=FIN_THICKNESS, r=40, center=true);
 			
 			translate([0,-18,0]) 
@@ -99,16 +101,26 @@ module fin() {
 				cube([10,10,FIN_THICKNESS+1], center=true);
 		}
 
-		translate([36.75,-12,0]) 
-			cylinder(h=finThickness, r=2.5, center=true);
+		rocketSupport();
 	}
+}
+
+module rocketSupport()
+{	
+	offset = [36.75,-12,0];
+
+	translate(offset) 
+		cylinder(h=FIN_THICKNESS, r=2.5, center=true);
 }
 
 function nutSide(diameter) = diameter * tan( 180/6 );
 
 module configureNut()
 {
-	translate([0,0,(SUPPORT_HEIGHT)/2]) 
+	offsetZ = SUPPORT_HEIGHT / 2;
+	offset = [0,0,offsetZ];
+
+	translate(offset) 
 		rotate(RIGTH_Z) 
 			nut();	
 }
