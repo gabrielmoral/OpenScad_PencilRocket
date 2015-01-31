@@ -14,10 +14,6 @@
  *   * Nothing at this time. 
  */
 
-/////////////////////////////////////////////////////////////////////////////
-// User-defined values... 
-/////////////////////////////////////////////////////////////////////////////
-
 finThickness     = 1;    // Thickness of fins
 finCount         = 3;    // Number of fins
 finInset         = 0.5;  // Distance fins are inset from surface
@@ -29,37 +25,44 @@ bandTranslation  = 8;    // The distance the band is translated toward the top o
 
 $fn              = 40;   // Overall curve quality
 
+up = [180,0,0];
 
-/////////////////////////////////////////////////////////////////////////////
-// The code... 
-/////////////////////////////////////////////////////////////////////////////
 
-rotate([180,0,0]) 
-union() {
-	translate([0,0,bandTranslation]) 
-	difference() {
-		cylinder(h=bandHeight, r=pencilInDiameter/2+bandThickness);
-	
-		translate([0,0,(bandHeight)/2]) 
-			rotate([0,0,30]) 
-			nut();
-	
-	}
-	
-	for( i=[0:finCount-1] ) {
-	
-		rotate([0,0,(360/finCount)*i]) 
-		translate([pencilInDiameter/2+bandThickness-finInset, 0, 0]) 
-		rotate([90,0,0]) 
-		scale([finScale,finScale,1]) 
-		fin(); 
-	
-	}
+module pencilRocket()
+{
+	rotate(up) 
+		union() 
+		{
+			pencilBase();	
+			fins();
+		}
 }
 
-/////////////////////////////////////////////////////////////////////////////
-// Modules... 
-/////////////////////////////////////////////////////////////////////////////
+module pencilBase()
+{
+	translate([0,0,bandTranslation]) 
+				difference() 
+				{
+					cylinder(h=bandHeight, r=pencilInDiameter/2+bandThickness);
+	
+					translate([0,0,(bandHeight)/2]) 
+						rotate([0,0,30]) 
+							nut();
+	
+				}
+}
+
+module fins()
+{
+	for( i=[0:finCount-1] ) 
+	{	
+		rotate([0,0,(360/finCount)*i]) 
+			translate([pencilInDiameter/2+bandThickness-finInset, 0, 0]) 
+				rotate([90,0,0]) 
+					scale([finScale,finScale,1]) 
+						fin(); 	
+	}
+}
 
 module fin() {
 	translate([-20,-11.8,0]) 
@@ -102,3 +105,5 @@ module nut()
 			cube( [side, pencilInDiameter, nutHeigth], center=true );
 	}	
 }
+
+pencilRocket();
